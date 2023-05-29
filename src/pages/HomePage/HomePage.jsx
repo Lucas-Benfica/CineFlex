@@ -12,13 +12,10 @@ export default function HomePage() {
     useEffect( () => {
         const promisse = axios.get(URL);
         promisse.then((resp) => {
-            console.log(resp);
             setListaFilmes(resp.data);
         })
         promisse.catch( erro => console.log(erro.response.data));
     }, []);
-
-    
 
     return (
         <PageContainer>

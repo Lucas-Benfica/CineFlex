@@ -4,17 +4,21 @@ import { useParams } from "react-router-dom"
 import styled from "styled-components"
 import Session from "../../components/Session";
 
-export default function SessionsPage() {
+export default function SessionsPage({setMovie}) {
 
     const parametros = useParams();
     const [filme, setFilme] = useState({});
     let days = []; 
+    let nomeDoFilme = '';
 
     const URL = `https://mock-api.driven.com.br/api/v8/cineflex/movies/${parametros.idFilme}/showtimes`;
 
     useEffect( () => {
         const promisse = axios.get(URL);
-        promisse.then(resp => setFilme(resp.data));
+        promisse.then(resp => {
+            setFilme(resp.data);
+                       
+        });
         promisse.catch(erro => console.log(erro.response.data));
     } , []);
 
@@ -26,10 +30,10 @@ export default function SessionsPage() {
         <PageContainer>
             Selecione o horário
             <div>
-                {(days) && days.map((day) => <Session key={day.id} day={day} /> )}
+                {(days) && days.map((day) => <Session key={day.id} day={day} nomeFilme={filme.title} setMovie={setMovie}/> )}
             </div>
 
-            <FooterContainer>
+            <FooterContainer data-test="footer">
                 <div>
                     <img src={filme.posterURL} alt="poster" />
                 </div>

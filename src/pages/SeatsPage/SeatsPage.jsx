@@ -1,51 +1,115 @@
+import axios, { Axios } from "axios";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components"
+import Seat from "../../components/Seat";
 
-export default function SeatsPage() {
+export default function SeatsPage({assentos, setAssentos, user, setUser}) {
+
+    const parametros = useParams();
+    const navigate = useNavigate();
+
+    const URL = `https://mock-api.driven.com.br/api/v8/cineflex/showtimes/${parametros.idSessao}/seats`
+    const URLPUSH = `https://mock-api.driven.com.br/api/v8/cineflex/seats/book-many`;
+
+    const [nome, setNome] = useState('');
+    const [cpf, setCpf] = useState('');
+    const [listaAssentos, setListaAssentos] = useState([]);
+    const [sessao, setSessao] = useState(undefined);
+    
+    let seats = undefined;
+
+    useEffect(() => {
+        const promisse = axios.get(URL);
+        promisse.then((resp) => {
+            setSessao(resp.data);
+        })
+        promisse.catch(erro => console.log(erro.response.data));
+        setAssentos([]);
+    }, []);
+
+    if (sessao === undefined) {
+        return <div>carregando</div>
+    } else {
+        seats = sessao.seats;
+    }
+
+    function reservarAssentos(e) {
+        e.preventDefault();
+
+        if (listaAssentos.length !== 0) {
+            const newIngresso = {
+                ids: listaAssentos,
+                name: nome,
+                cpf: cpf
+            }
+            console.log("ENVIO", newIngresso);
+            axios.post(URLPUSH, newIngresso)
+                .then((response) => {
+                    console.log(response);
+                    console.log("Enviado com sucesso");
+                    navigate('/sucesso');
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+            
+            setUser({nome:nome, cpf: cpf})
+        } else {
+            console.log("Selecione algum assento");
+        }
+    }
 
     return (
         <PageContainer>
             Selecione o(s) assento(s)
 
             <SeatsContainer>
-                <SeatItem>01</SeatItem>
-                <SeatItem>02</SeatItem>
-                <SeatItem>03</SeatItem>
-                <SeatItem>04</SeatItem>
-                <SeatItem>05</SeatItem>
+                {(seats) && seats.map((seat) => (
+                    <Seat key={seat.id}
+                        name={seat.name} id={seat.id} isAvailable={seat.isAvailable}
+                        listaAssentos={listaAssentos} setListaAssentos={setListaAssentos}
+                        assentos={assentos} setAssentos={setAssentos} />
+                ))}
             </SeatsContainer>
 
             <CaptionContainer>
                 <CaptionItem>
-                    <CaptionCircle />
+                    <CaptionCircle cor={"#1AAE9E"} borda={"#0E7D71"} />
                     Selecionado
                 </CaptionItem>
                 <CaptionItem>
-                    <CaptionCircle />
+                    <CaptionCircle cor={"#C3CFD9"} borda={"#7B8B99"} />
                     Disponível
                 </CaptionItem>
                 <CaptionItem>
-                    <CaptionCircle />
+                    <CaptionCircle cor={"#FBE192"} borda={"#F7C52B"} />
                     Indisponível
                 </CaptionItem>
             </CaptionContainer>
 
-            <FormContainer>
-                Nome do Comprador:
-                <input placeholder="Digite seu nome..." />
+            <FormContainer onSubmit={reservarAssentos} >
 
-                CPF do Comprador:
-                <input placeholder="Digite seu CPF..." />
+                <label htmlFor="campoNome">Nome do Comprador:</label>
+                <input data-test="client-name" id="campoNome" type="text" placeholder="Digite seu nome..." required
+                    value={nome} onChange={(e) => setNome(e.target.value)} />
 
-                <button>Reservar Assento(s)</button>
+                <label htmlFor="campoCpf">CPF do Comprador:</label>
+                <input data-test="client-cpf" id="campoCpf" type="text" placeholder="Digite seu CPF..." required
+                    value={cpf} onChange={(e) => setCpf(e.target.value)} />
+
+                <button data-test="book-seat-btn" type="submit">Reservar Assento(s)</button>
+
             </FormContainer>
 
-            <FooterContainer>
+            <FooterContainer  data-test="footer">
                 <div>
-                    <img src={"https://br.web.img2.acsta.net/pictures/22/05/16/17/59/5165498.jpg"} alt="poster" />
+                    <img src={sessao.movie.posterURL} alt="poster" />
                 </div>
                 <div>
-                    <p>Tudo em todo lugar ao mesmo tempo</p>
-                    <p>Sexta - 14h00</p>
+                    <p>{sessao.movie.title}</p>
+                    <p>{sessao.day.weekday} - {sessao.name}</p>
                 </div>
             </FooterContainer>
 
@@ -74,7 +138,7 @@ const SeatsContainer = styled.div`
     justify-content: center;
     margin-top: 20px;
 `
-const FormContainer = styled.div`
+const FormContainer = styled.form`
     width: calc(100vw - 40px); 
     display: flex;
     flex-direction: column;
@@ -96,8 +160,8 @@ const CaptionContainer = styled.div`
     margin: 20px;
 `
 const CaptionCircle = styled.div`
-    border: 1px solid blue;         // Essa cor deve mudar
-    background-color: lightblue;    // Essa cor deve mudar
+    border: 1px solid ${(p) => p.borda};         // Essa cor deve mudar
+    background-color: ${(p) => p.cor};    // Essa cor deve mudar
     height: 25px;
     width: 25px;
     border-radius: 25px;
@@ -112,19 +176,7 @@ const CaptionItem = styled.div`
     align-items: center;
     font-size: 12px;
 `
-const SeatItem = styled.div`
-    border: 1px solid blue;         // Essa cor deve mudar
-    background-color: lightblue;    // Essa cor deve mudar
-    height: 25px;
-    width: 25px;
-    border-radius: 25px;
-    font-family: 'Roboto';
-    font-size: 11px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 5px 3px;
-`
+
 const FooterContainer = styled.div`
     width: 100%;
     height: 120px;

@@ -3,20 +3,23 @@ import styled from "styled-components"
 
 export default function Session(props){
     
-    const {day} = props;
-    console.log("dia",day);
+    let {day, nomeFilme, setMovie} = props;
     
     let times = day.showtimes;
-    console.log(times);
+
+    function armazenarFilme(horario, data){
+        const newMovie = {nome: nomeFilme, horario: horario, data: data}
+        setMovie(newMovie);
+    }
     
     return (
 
-        <SessionContainer>
+        <SessionContainer data-test="movie-day">
             {day.weekday} - {day.date}
             <ButtonsContainer>
                 {times.map( time => (
                         <Link to={`/assentos/${time.id}`} key={time.id}>
-                            <button>{time.name}</button>
+                            <button data-test="showtime" onClick={() => armazenarFilme(time.name, day.date)} >{time.name}</button>
                         </Link>
                     ))}
             </ButtonsContainer>

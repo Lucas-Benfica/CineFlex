@@ -1,4 +1,5 @@
 import axios from "axios"
+import { useState } from "react"
 import { BrowserRouter, Route, Routes } from "react-router-dom"
 import styled from "styled-components"
 import HomePage from "./pages/HomePage/HomePage"
@@ -8,24 +9,25 @@ import SuccessPage from "./pages/SuccessPage/SuccessPage"
 
 
 
-export default function App() {
+export default function App() { 
 
     axios.defaults.headers.common['Authorization'] = 'qyljPJJpi4WtoJbGgD9q72Bk';
-
-
+    const [user, setUser] = useState(undefined);
+    const [movie, setMovie] = useState(undefined);
+    const [assentos, setAssentos] = useState([]);
 
 
     return (
         <>
-           <NavContainer>CINEFLEX</NavContainer>
-            <BrowserRouter>
-                <Routes>
-                    <Route path="/" element={<HomePage />} />
-                    <Route path="/sessoes/:idFilme" element={<SessionsPage />} />
-                    <Route path="/assentos/:idSessao" element={<SeatsPage />} />
-                    <Route path="/sucesso" element={<SuccessPage />} />
-                </Routes>
-            </BrowserRouter>
+        <NavContainer>CINEFLEX</NavContainer>
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/sessoes/:idFilme" element={<SessionsPage setMovie={setMovie} />} />
+                <Route path="/assentos/:idSessao" element={<SeatsPage assentos={assentos} setAssentos={setAssentos} user={user} setUser={setUser}/>}/>
+                <Route path="/sucesso" element={<SuccessPage movie={movie} assentos={assentos} user={user} />} />
+            </Routes>
+        </BrowserRouter>
         </>
     )
 }
