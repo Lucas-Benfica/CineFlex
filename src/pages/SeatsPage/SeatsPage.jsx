@@ -187,6 +187,7 @@ const FooterContainer = styled.div`
     font-size: 20px;
     position: fixed;
     bottom: 0;
+    left: 0;
 
     div:nth-child(1) {
         box-shadow: 0px 2px 4px 2px #0000001A;

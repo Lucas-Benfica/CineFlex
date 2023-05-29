@@ -12,8 +12,6 @@ export default function Seat(props){
         let listaDeAssentos = [];
 
         if(isAvailable){
-            alert("Esse assento não está disponível");
-        }else{
             (selected) ? setSelected(false) : setSelected(true);
         
             const index = listaAssentos.indexOf(id);
@@ -36,7 +34,9 @@ export default function Seat(props){
                 setAssentos(listaDeAssentos);
 
             }
-
+            
+        }else{
+            alert("Esse assento não está disponível");
         }
         
     }
@@ -69,7 +69,7 @@ const SeatItem = styled.div`
 function selecionarCor(p){
     
     const {isAvailable, selected} = p;
-    if(isAvailable === false){
+    if(isAvailable === true){
         if(selected === true){
             return "#1AAE9E";
         }else{
@@ -83,7 +83,7 @@ function selecionarCor(p){
 function corBorda(p){
     const {isAvailable, selected} = p;
 
-    if(isAvailable === false){
+    if(isAvailable === true){
         if(selected === true){
             return "#0E7D71";
         }else{
