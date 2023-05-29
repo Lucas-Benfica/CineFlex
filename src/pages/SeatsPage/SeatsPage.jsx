@@ -147,9 +147,26 @@ const FormContainer = styled.form`
     font-size: 18px;
     button {
         align-self: center;
+        width: 225px;
+        height: 42px;
+        font-size: 18px;
+        text-align: center;
+        background: #E8833A;
+        color: white;
+        border: none;
+        margin-top: 15px;
     }
     input {
-        width: calc(100vw - 60px);
+        width: calc(100vw - 60px); 
+        height: 51px;
+        margin: 2px 0 8px;
+        background: #FFFFFF;
+        border: 1px solid #D5D5D5;
+        border-radius: 3px;
+        font-size: 18px;
+        line-height: 21px;
+        color: #AFAFAF;
+        padding-left: 15px;
     }
 `
 const CaptionContainer = styled.div`
